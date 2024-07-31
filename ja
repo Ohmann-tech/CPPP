@@ -1,0 +1,99 @@
+const int screen_width = 480;
+const int screen_height = 320;
+
+const float paddle_height = 20.;
+const float paddle_width = 20.;
+
+const float paddle_speed = 5.;
+
+const float ball_radius = 5.;
+const float factor = 2.;
+
+typedef struct {
+    float x;
+    float y;
+} vec2f;
+
+vec2f add_vec(vec2f u, vec2f v) {
+    u.x += v.x;
+    u.y += v.y;
+    return u;
+}
+vec2f sub_vec(vec2f u, vec2f v) {
+    u.x -= v.x;
+    u.y -= v.y;
+    return u;
+}
+vec2f mult_vec(vec2f u, float x) {
+    u.x *= x;
+    u.y *= x;
+    return u;
+}
+
+vec2f ball_v;
+vec2f ball_p;
+
+float lpp; // left paddle pos: paddle_height / 2 = bottom, screen_height - paddle_height / 2 = top
+float rpp; // right paddle pos
+
+
+int lscore = 0;
+int rscore = 0;
+
+void reset() {
+    lpp = screen_height / 2.;
+    rpp = lpp;
+    ball_p.x = screen_width / 2.;
+    ball_p.y = screen_height / 2.;
+    ball_v.x = 1.;
+    ball_v.y = 0.;
+}
+
+void update(float delta) {
+    vec2f prev_ball_p = ball_p;
+    ball_p = add_vec(ball_p, mult_vec(ball_v, delta));
+
+    float prev_lpp = lpp;
+    float prev_rpp = rpp;
+
+    if(false) { 
+        lpp += delta * paddle_speed;
+    }
+    if(false) {
+        rpp += delta * paddle_speed;
+    }
+
+    if(ball_v.x < 0) {
+        if(ball_p.x < 0) {
+        // calculate intersection of x = 0 and ball trajectory
+        ball_p.y = (-ball_p.x) / (prev_ball_p.x - ball_p.x) * (prev_ball_p.y - prev_ball_p.y) + ball_p.y;
+        ball_p.x = 0;
+    }
+    }
+
+
+    if(ball_p.x > screen_width) {
+        ball_p.y = (ball_p.x-screen_width) / (ball_p.x - prev_ball_p.x) * (prev_ball_p.y - prev_ball_p.y) + ball_p.y;
+        ball_p.x = screen_width;
+    }
+    
+    if(ball_p.x - ball_radius <= paddle_width && ball_p.y - ball_radius/2 <= lpp + paddle_height/2 && ball_p.y + ball_radius/2 >= lpp - paddle_height/2) { // Case Links hit
+        ball_v.x = - ball_v.x;
+        ball_v.y = ball_v.y + factor * 1/(lpp + paddle_height/2 - ball_p.y); // Evtl noch Factor anpassen
+    }
+
+    if(ball_p.x + ball_radius >= screen_width - paddle_width && ball_p.y - ball_radius/2 <= lpp + paddle_height/2 && ball_p.y + ball_radius/2 >= lpp - paddle_height/2) { // Case Links hit
+        ball_v.x = - ball_v.x;
+        ball_v.y = ball_v.y + factor * 1/(lpp + paddle_height/2 - ball_p.y); // Evtl noch Factor anpassen
+    }
+
+    else if(ball.x - ball_radius <= 0) {
+        r_score += 1
+        //profrühl.display() Rechts gewonnen
+    }
+
+    else if(ball.x + ball_radius >= screen_width) {
+        r_score += 1
+        //profrühl.display() Links gewonnen
+    }
+}
